@@ -1,7 +1,26 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-
+import mysql.connector
 app=Flask(__name__)
 app.secret_key = 'patri'
+
+
+
+
+mydb = mysql.connector.connect(
+host="localbmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com",
+user="uvygxbx3ujut3sab",
+password="gDrHqdsepK62CtCk16ei",
+database="bmf4xvockkzpjbcbrlhh"
+)
+
+
+
+
+
+
+
+
+
 
 users = {
     'pajan': 'god',
@@ -50,5 +69,5 @@ def submit_contact():
     return f'Formulario enviado por {nombre}'
 
 if __name__ == "__main__":
-    app.run(debug=True, port=3500)
+    app.run(debug=True, port=3306)
 
