@@ -2,21 +2,15 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import hashlib
 import mysql.connector
 
-app=Flask(__name__)
+app = Flask(__name__)
 app.secret_key = 'patri'
-
-#tendriamos k usar la base aca pero pongo esto como para ver que funque
-users = {
-    'pajan': 'god',
-    'pocho': 'pochin'
-}
 
 # Configuración de la base de datos
 db_config = {
-    'user': 'tu_usuario',
-    'password': 'tu_contraseña',
-    'host': 'tu_host',
-    'database': 'tu_base_de_datos'
+    'host': "localbmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com",
+    'user': "uvygxbx3ujut3sab",
+    'password': "gDrHqdsepK62CtCk16ei",
+    'database': "bmf4xvockkzpjbcbrlhh"
 }
 
 # Función para obtener una conexión a la base de datos
@@ -26,15 +20,19 @@ def get_db_connection():
 
 @app.route('/')
 def home():
-    if 'username' in session:
+    if 'email' in session:
         return render_template("home.html")
     return "You are not logged in <br><a href='/login'>Login</a>"
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        if not email or not password:
+            flash('Email and password are required!')
+            return redirect(url_for('login'))
         
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
@@ -59,8 +57,7 @@ def login():
 def logout():
     session.pop('email', None)
     flash('You have been logged out.')
-    return render_template('logout.html')
-
+    return redirect(url_for('home'))
 
 @app.route("/resultados")
 def resultados():
@@ -75,6 +72,9 @@ def submit_contact():
     nombre = request.form['nombre']
     return f'Formulario enviado por {nombre}'
 
+@app.route("/perfil")
+def perfil():
+    return render_template("perfil.html")
+
 if __name__ == "__main__":
     app.run(debug=True, port=3500)
-
