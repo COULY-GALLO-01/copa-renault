@@ -1,0 +1,52 @@
+body {
+    font-family: 'Garamond', serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px; /* Espaciado entre h1 y el resto del contenido */
+}
+
+p {
+    margin-left: 20px; /* Margen a la izquierda */
+    margin-right: 20px; /* Margen a la derecha */
+    font-size: 18px; /* Tamaño de fuente más grande */
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contact-form form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    width: 100px; /* Ajusta este valor según tus necesidades */
+    margin-right: 10px;
+}
+
+.form-group input, 
+.form-group textarea {
+    flex: 1;
+}
+
+button {
+    align-self: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}

@@ -1,0 +1,59 @@
+{% extends "./base.html" %}
+
+<title>{% block title %}Copa Renault{% endblock %}</title>
+
+{% block body %}
+<h1>Contacto</h1>
+
+<section class="contact-form">
+    <h2>Formulario de contacto</h2>
+    <form action="{{ url_for('submit_contact') }}" method="post">
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="mensaje">Mensaje:</label>
+            <textarea id="mensaje" name="mensaje" rows="4" required></textarea>
+        </div>
+        <button type="submit">Enviar</button>
+    </form>
+</section>
+
+<style>
+    .contact-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .contact-form form {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .form-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .form-group label {
+        width: 100px; /* Ajusta este valor según tus necesidades */
+        margin-right: 10px;
+    }
+    .form-group input, 
+    .form-group textarea {
+        flex: 1;
+    }
+    button {
+        align-self: center;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+
+{% endblock %}
