@@ -1,0 +1,6 @@
+{
+    "deploy": {
+      "pip_install": "--no-cache-dir"
+    }
+  }
+  
