@@ -1,28 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+import hashlib
+import mysql.connector
 
-app=Flask(__name__)
+app = Flask(__name__)
 app.secret_key = 'patri'
 
-
-
-
-mydb = mysql.connector.connect(
-host="localbmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com",
-user="uvygxbx3ujut3sab",
-password="gDrHqdsepK62CtCk16ei",
-database="bmf4xvockkzpjbcbrlhh"
-)
-
-
-
-
-
-
-
-
-
-
-# Configuración de la base de datos
 db_config = {
     'host': "localbmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com",
     'user': "uvygxbx3ujut3sab",
@@ -30,51 +12,50 @@ db_config = {
     'database': "bmf4xvockkzpjbcbrlhh"
 }
 
-# Función para obtener una conexión a la base de datos
 def get_db_connection():
     conn = mysql.connector.connect(**db_config)
     return conn
 
+users = {
+    'patocgd@gmail.com': {
+        'nombres': 'patocgd@gmail.com',
+        'password_hash': hashlib.sha256('password'.encode()).hexdigest()
+    }
+}
+
 @app.route('/')
 def home():
-    if 'email' in session:
-        return render_template("home.html")
-    return "You are not logged in <br><a href='/login'>Login</a>"
+    if 'nombres' not in session:
+        flash('Please log in first.')
+        return redirect(url_for('login'))
+    return f"Welcome {session['nombres']}!"
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
+        nombres = request.form.get('nombres')  # 'email' renamed to 'nombres'
         password = request.form.get('password')
         
-        if not email or not password:
-            flash('Email and password are required!')
+        if not nombres or not password:
+            flash('se necesitan nombre y contraseña')
             return redirect(url_for('login'))
         
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute('SELECT dni_participante, email, password_hash FROM participantes WHERE email = %s', (email,))
-        user = cursor.fetchone()
+        user = users.get(nombres)
         
         if user and user['password_hash'] == hashlib.sha256(password.encode()).hexdigest():
-            session['email'] = user['email']
+            session['nombres'] = user['nombres']
             flash('Login successful!')
-            cursor.close()
-            conn.close()
             return redirect(url_for('home'))
         else:
-            flash('Invalid credentials, please try again.')
-        
-        cursor.close()
-        conn.close()
+            flash('no existe/esta mal.')
     
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
-    session.pop('email', None)
+    session.pop('nombres', None)
     flash('You have been logged out.')
-    return redirect(url_for('home'))
+    return redirect(url_for('login'))
 
 @app.route("/resultados")
 def resultados():
@@ -93,6 +74,5 @@ def submit_contact():
 def perfil():
     return render_template("perfil.html")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True, port=3500)
-
