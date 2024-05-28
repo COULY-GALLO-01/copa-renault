@@ -19,7 +19,7 @@ def get_db_connection():
 users = {
     'patocgd@gmail.com': {
         'nombres': 'patocgd@gmail.com',
-        'password_hash': hashlib.sha256('password'.encode()).hexdigest()
+        'password_hash': hashlib.sha256('patricio'.encode()).hexdigest()
     }
 }
 
@@ -33,7 +33,7 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        nombres = request.form.get('nombres')  # 'email' renamed to 'nombres'
+        nombres = request.form.get('nombres')  
         password = request.form.get('password')
         
         if not nombres or not password:
@@ -51,11 +51,17 @@ def login():
     
     return render_template('login.html')
 
+
 @app.route('/logout')
 def logout():
     session.pop('nombres', None)
     flash('You have been logged out.')
     return redirect(url_for('login'))
+
+
+
+
+
 
 @app.route("/resultados")
 def resultados():
