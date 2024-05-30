@@ -19,16 +19,49 @@ def get_db_connection():
 users = {
     'patocgd@gmail.com': {
         'nombres': 'patocgd@gmail.com',
-        'password_hash': hashlib.sha256('patricio'.encode()).hexdigest()
+        'password' :'patricio'
     }
 }
 
 @app.route('/')
 def home():
     if 'nombres' not in session:
-        flash('Please log in first.')
+        flash('inicie secion primero.')
         return redirect(url_for('login'))
-    return f"Welcome {session['nombres']}!"
+    else:
+        flash('haga una cuenta si no tiene una')
+        return render_template('sign_in.html')
+
+
+
+@app.route('/sign_in', methods=['GET', 'POST'])
+def sign_in():
+    if request.method == 'POST':
+        nombre = request.form.get('nombre_sign') 
+        contraseña = request.form.get('password_sign')
+        
+        if not nombre or not contraseña:
+            flash('se necesitan nombre y contraseña')
+            return redirect(url_for('sign_in'))
+        
+        if nombre in users:
+            flash('El usuario ya existe.')
+            return redirect(url_for('sign_in'))
+        
+        
+        users[nombre] = {'nombres': nombre, 'contraseñas':contraseña }
+        
+        flash('ya entraste we')
+        return redirect(url_for('login'))
+    
+    return render_template('sign_in.html')
+
+
+
+
+
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
