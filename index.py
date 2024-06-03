@@ -13,6 +13,9 @@ db_config = {
     'database': "bmf4xvockkzpjbcbrlhh"
 }
 
+with open('usuarios.json', 'r') as f:
+    users = json.load(f)
+
 def get_db_connection():
     conn = mysql.connector.connect(**db_config)
     return conn
@@ -27,7 +30,7 @@ def home():
 
 def guardar_usuarios(users):
     with open('usuarios.json', 'w') as archivo:
-        json.dump(users, archivo)
+        json.dump(users, archivo, indent=4, separators=(',', ': '))
 
 @app.route('/sign_in', methods=['GET', 'POST'])
 def sign_in():
@@ -40,7 +43,7 @@ def sign_in():
             return redirect(url_for('sign_in'))
         
         if nombre in users:
-            flash('El usuario ya existe.')
+            flash('El usuario ya existe. Por favor, elija otro nombre de usuario.')
             return redirect(url_for('sign_in'))
         
         users[nombre] = {'nombres': nombre, 'password': contraseña }
@@ -50,6 +53,7 @@ def sign_in():
         return redirect(url_for('login'))
     
     return render_template('sign_in.html')
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
