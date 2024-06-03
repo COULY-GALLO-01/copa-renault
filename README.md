@@ -22,7 +22,7 @@ En nuestra página oficial de la Copa Renault, podrás:
 ### Cómo Empezar 🚀
 
 1. **Registro de Cuenta:**
-   - Haz clic en el botón "Registrarse" en la página de inicio.
+   - Haz clic en el botón "Sign In" en la página de inicio.
    - Completa el formulario de registro con tus datos personales y elige un nombre de usuario y contraseña.
    
 2. **Explora la Página:**
