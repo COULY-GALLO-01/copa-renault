@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import hashlib
 import mysql.connector
+import json
 
 app = Flask(__name__)
 app.secret_key = 'patri'
@@ -16,23 +17,17 @@ def get_db_connection():
     conn = mysql.connector.connect(**db_config)
     return conn
 
-users = {
-    'patocgd@gmail.com': {
-        'nombres': 'patocgd@gmail.com',
-        'password' :'patricio'
-    }
-}
-
 @app.route('/')
 def home():
     if 'nombres' not in session:
-        flash('inicie secion primero.')
+        flash('inicie sesion primero.')
         return redirect(url_for('login'))
     else:
-        flash('haga una cuenta si no tiene una')
-        return render_template('sign_in.html')
+        return render_template('home.html')
 
-
+def guardar_usuarios(users):
+    with open('usuarios.json', 'w') as archivo:
+        json.dump(users, archivo)
 
 @app.route('/sign_in', methods=['GET', 'POST'])
 def sign_in():
@@ -41,26 +36,20 @@ def sign_in():
         contraseña = request.form.get('password_sign')
         
         if not nombre or not contraseña:
-            flash('se necesitan nombre y contraseña')
+            flash('Se necesitan nombre y contraseña')
             return redirect(url_for('sign_in'))
         
         if nombre in users:
             flash('El usuario ya existe.')
             return redirect(url_for('sign_in'))
         
+        users[nombre] = {'nombres': nombre, 'password': contraseña }
+        guardar_usuarios(users)
         
-        users[nombre] = {'nombres': nombre, 'contraseñas':contraseña }
-        
-        flash('ya entraste we')
+        flash('¡Ya has ingresado!')
         return redirect(url_for('login'))
     
     return render_template('sign_in.html')
-
-
-
-
-
-
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -70,17 +59,19 @@ def login():
         password = request.form.get('password')
         
         if not nombres or not password:
-            flash('se necesitan nombre y contraseña')
+            flash('Se necesitan nombre y contraseña')
             return redirect(url_for('login'))
         
-        user = users.get(nombres)
-        
-        if user and user['password_hash'] == hashlib.sha256(password.encode()).hexdigest():
-            session['nombres'] = user['nombres']
-            flash('Login successful!')
-            return redirect(url_for('home'))
+        if nombres in users:
+            user = users[nombres]
+            if user['password'] == password:
+                session['nombres'] = user['nombres']
+                flash('¡Inicio de sesión exitoso!')
+                return redirect(url_for('home'))
+            else:
+                flash('Contraseña incorrecta.')
         else:
-            flash('no existe/esta mal.')
+            flash('El usuario no existe.')
     
     return render_template('login.html')
 
@@ -90,11 +81,6 @@ def logout():
     session.pop('nombres', None)
     flash('You have been logged out.')
     return redirect(url_for('login'))
-
-
-
-
-
 
 @app.route("/resultados")
 def resultados():
