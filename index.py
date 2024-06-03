@@ -99,9 +99,16 @@ def submit_contact():
     nombre = request.form['nombre']
     return f'Formulario enviado por {nombre}'
 
-@app.route("/perfil")
+@app.route('/perfil')
 def perfil():
-    return render_template("perfil.html")
+    if 'nombres' in session:
+        email_usuario = session['nombres']  # Utiliza directamente session['nombres'] como el correo electrónico del usuario
+        return render_template('perfil.html', email=email_usuario)
+    else:
+        flash('Inicie sesión primero.')
+        return redirect(url_for('login'))
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=3500)

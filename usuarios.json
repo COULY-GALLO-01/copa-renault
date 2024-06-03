@@ -6,5 +6,9 @@
     "pajan@gmail.com": {
         "nombres": "pajan@gmail.com",
         "password": "pajan"
+    },
+    "a@gmail.com": {
+        "nombres": "a@gmail.com",
+        "password": "a"
     }
 }
