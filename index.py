@@ -1,5 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
-import hashlib
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, make_response
 import mysql.connector
 import json
 
@@ -55,7 +54,6 @@ def sign_in():
     return render_template('sign_in.html')
 
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -69,9 +67,11 @@ def login():
         if nombres in users:
             user = users[nombres]
             if user['password'] == password:
-                session['nombres'] = user['nombres']
                 flash('¡Inicio de sesión exitoso!')
-                return redirect(url_for('home'))
+                # Creamos una cookie segura con el nombre de usuario
+                response = make_response(redirect(url_for('home')))
+                response.set_cookie('nombres', nombres, max_age=3600)
+                return response
             else:
                 flash('Contraseña incorrecta.')
         else:
@@ -79,12 +79,13 @@ def login():
     
     return render_template('login.html')
 
-
 @app.route('/logout')
 def logout():
-    session.pop('nombres', None)
+    response = make_response(redirect(url_for('login')))
+    response.set_cookie('nombres', '', expires=0)
+    
     flash('You have been logged out.')
-    return redirect(url_for('login'))
+    return response
 
 @app.route("/resultados")
 def resultados():
@@ -101,13 +102,13 @@ def submit_contact():
 
 @app.route('/perfil')
 def perfil():
-    if 'nombres' in session:
-        email_usuario = session['nombres']  # Utiliza directamente session['nombres'] como el correo electrónico del usuario
+    email_usuario = request.cookies.get('nombres')
+    if email_usuario:
         return render_template('perfil.html', email=email_usuario)
     else:
         flash('Inicie sesión primero.')
         return redirect(url_for('login'))
-
+#no se pork no anda ^^^^^^^^^^^^^^
 
 
 if __name__ == '__main__':
