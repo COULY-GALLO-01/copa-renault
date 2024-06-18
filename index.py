@@ -48,7 +48,6 @@ def sign_in():
         db.session.add(new_user)  
         db.session.commit()  
 
-        flash('¡Registro exitoso!')
         return redirect(url_for('login'))
 
     return render_template('sign_in.html')
@@ -66,18 +65,19 @@ def login():
       
         user = User.query.filter_by(username=nombres).first()
         if user and user.password == password:
-            flash('¡Inicio de sesión exitoso!')
+            
             session['nombres'] = nombres
             return redirect(url_for('home'))
         else:
-            flash('Nombre de usuario o contraseña incorrectos.')
+            print('Nombre de usuario o contraseña incorrectos.')
 
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
-    session.pop('nombres', None)  # Elimina 'nombres' de la sesión
-    flash('Has cerrado sesión.')
+    session.pop('nombres', None)  # Elimina nombres de la sesión y si no hay nombres, no hace falta eliminar lac ontraseña
+
+    print('Has cerrado sesión.')
     return redirect(url_for('login'))
 
 @app.route("/resultados")

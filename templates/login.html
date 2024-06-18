@@ -5,8 +5,7 @@
 
 {% block body %}
 <h2>Login</h2>
-<form method="post" action="{{ url_for('login') }}">
-<link>
+<form method="post" action="{{ url_for('login') }}"><link>
     <div class="form-group">
         <label for="nombres">nombre:</label>
         <input type="email" id="nombres" name="nombres" required>
@@ -16,5 +15,10 @@
         <input type="password" id="password" name="password" required>
     </div>
     <button type="submit">Login</button>
+
+    <div>
+     <label>si no tienens una cuenta crea una ahora!</label>
+     <a class="nav-link" href="{{ url_for('sign_in') }}">sign in</a> #habria que ponerlo lindo
+    </div>
 </form>
 {% endblock %}
