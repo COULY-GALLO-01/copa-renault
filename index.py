@@ -6,8 +6,17 @@ app = Flask(__name__)
 app.secret_key = 'patri'
 
 # Configuración de la conexión a la base de datos MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://uvygxbx3ujut3sab:gDrHqdsepK62CtCk16ei@localbmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com/bmf4xvockkzpjbcbrlhh'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://uvygxbx3ujut3sab:gDrHqdsepK62CtCk16ei@bmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com:3306/bmf4xvockkzpjbcbrlhh'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# mysql db=bmf4xvockkzpjbcbrlhh
+#mysql host=bmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com
+#mysql password=gDrHqdsepK62CtCk16ei
+#mysql port=3306
+#mysql uri=mysql://uvygxbx3ujut3sab:gDrHqdsepK62CtCk16ei@bmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com:3306/bmf4xvockkzpjbcbrlhh
+#mysql user=uvygxbx3ujut3sab
+
+
 
 db = SQLAlchemy(app)  
 
