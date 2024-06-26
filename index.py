@@ -1,6 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
-from flask_sqlalchemy import SQLAlchemy  # Importa SQLAlchemy para manejar la base de datos
-import json
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.secret_key = 'patri'
@@ -9,16 +8,7 @@ app.secret_key = 'patri'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://uvygxbx3ujut3sab:gDrHqdsepK62CtCk16ei@bmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com:3306/bmf4xvockkzpjbcbrlhh'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# mysql db=bmf4xvockkzpjbcbrlhh
-#mysql host=bmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com
-#mysql password=gDrHqdsepK62CtCk16ei
-#mysql port=3306
-#mysql uri=mysql://uvygxbx3ujut3sab:gDrHqdsepK62CtCk16ei@bmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com:3306/bmf4xvockkzpjbcbrlhh
-#mysql user=uvygxbx3ujut3sab
-
-
-
-db = SQLAlchemy(app)  
+db = SQLAlchemy(app)
 
 # Define el modelo de la tabla de usuarios
 class User(db.Model):
@@ -28,6 +18,10 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+
+# Crea todas las tablas
+with app.app_context():
+    db.create_all()
 
 @app.route('/')
 def home():
@@ -48,14 +42,14 @@ def sign_in():
             return redirect(url_for('sign_in'))
 
         # Verifica si el usuario ya existe en la base de datos
-        if User.query.filter_by(username=nombre).first():#hace una consulta en la bd y busca el nombre, elige el primero
+        if User.query.filter_by(username=nombre).first():
             flash('El usuario ya existe. Por favor, elija otro nombre de usuario.')
             return redirect(url_for('sign_in'))
 
         # Crea un nuevo usuario y lo agrega a la base de datos
         new_user = User(username=nombre, password=contraseña)
-        db.session.add(new_user)  
-        db.session.commit()  
+        db.session.add(new_user)
+        db.session.commit()
 
         return redirect(url_for('login'))
 
@@ -71,22 +65,19 @@ def login():
             flash('Se necesitan nombre y contraseña')
             return redirect(url_for('login'))
 
-      
         user = User.query.filter_by(username=nombres).first()
         if user and user.password == password:
-            
             session['nombres'] = nombres
             return redirect(url_for('home'))
         else:
-            print('Nombre de usuario o contraseña incorrectos.')
+            flash('Nombre de usuario o contraseña incorrectos.')
 
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
-    session.pop('nombres', None)  # Elimina nombres de la sesión y si no hay nombres, no hace falta eliminar lac ontraseña
-
-    print('Has cerrado sesión.')
+    session.pop('nombres', None)
+    flash('Has cerrado sesión.')
     return redirect(url_for('login'))
 
 @app.route("/resultados")
@@ -105,8 +96,8 @@ def submit_contact():
 @app.route('/perfil')
 def perfil():
     if 'nombres' in session:
-        email_usuario = session['nombres']
-        return render_template('perfil.html', email=email_usuario)
+       nombre_ususario = session['nombres']
+       return render_template('perfil.html', nombre_perfil=nombre_ususario)
     else:
         flash('Inicie sesión primero.')
         return redirect(url_for('login'))
