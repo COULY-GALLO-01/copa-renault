@@ -5,6 +5,26 @@
 {% block body %}
 <h1>Resultados de los Partidos</h1>
 
-<p>Aca tendriamos k usar la base de datos ya vere</p>
+<a class="nav-link" href="{{ url_for('agregar') }}">Haga click para agregar un nuevo resultado</a>
 
+<table border="1">
+    <tr>
+        <th>Deporte</th>
+        <th>Equipo 1</th>
+        <th>Puntuación 1</th>
+        <th>Equipo 2</th>
+        <th>Puntuación 2</th>
+        <th>Ganador</th>
+    </tr>
+    {% for resultado in resultados %}
+    <tr>
+        <td>{{ resultado.deporte }}</td>
+        <td>{{ resultado.equipo1.nombre }}</td>
+        <td>{{ resultado.puntuacion1 }}</td>
+        <td>{{ resultado.equipo2.nombre }}</td>
+        <td>{{ resultado.puntuacion2 }}</td>
+        <td>{{ resultado.ganador }}</td>
+    </tr>
+    {% endfor %}
+</table>
 {% endblock %}

@@ -1,0 +1,36 @@
+{% extends "./base.html" %}
+
+<title>{% block title %}Agregar Resultado{% endblock %}</title>
+
+{% block body %}
+<h1>Agregar Resultado</h1>
+
+<form method="post" action="{{ url_for('agregar') }}">
+    <div class="form-group">
+        <label for="deporte">Deporte:</label>
+        <select id="deporte" name="deporte" required>
+            <option value="basket">Basket</option>
+            <option value="futbol">Futbol</option>
+            <option value="volley">Volley</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="equipo1">Equipo 1:</label>
+        <input type="text" id="equipo1" name="equipo1" required>
+    </div>
+    <div class="form-group">
+        <label for="puntuacion1">Puntuación Equipo 1:</label>
+        <input type="number" id="puntuacion1" name="puntuacion1" required>
+    </div>
+    <div class="form-group">
+        <label for="equipo2">Equipo 2:</label>
+        <input type="text" id="equipo2" name="equipo2" required>
+    </div>
+    <div class="form-group">
+        <label for="puntuacion2">Puntuación Equipo 2:</label>
+        <input type="number" id="puntuacion2" name="puntuacion2" required>
+    </div>
+    <button type="submit">Confirmar</button>
+</form>
+
+{% endblock %}

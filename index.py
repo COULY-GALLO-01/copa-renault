@@ -4,13 +4,13 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.secret_key = 'patri'
 
-# Configuración de la conexión a la base de datos MySQL
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://uvygxbx3ujut3sab:gDrHqdsepK62CtCk16ei@bmf4xvockkzpjbcbrlhh-mysql.services.clever-cloud.com:3306/bmf4xvockkzpjbcbrlhh'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# Define el modelo de la tabla de usuarios
+# tabla usuarios
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -18,6 +18,31 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+
+#tabla equipo
+class Equipo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(80), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f'<Equipo {self.nombre}>'
+
+#tabla resultados
+class Resultado(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    deporte = db.Column(db.String(50), nullable=False)
+    equipo1_id = db.Column(db.Integer, db.ForeignKey('equipo.id'), nullable=False)
+    equipo2_id = db.Column(db.Integer, db.ForeignKey('equipo.id'), nullable=False)
+    puntuacion1 = db.Column(db.Integer, nullable=False)
+    puntuacion2 = db.Column(db.Integer, nullable=False)
+    ganador = db.Column(db.String(80), nullable=False)
+
+    equipo1 = db.relationship('Equipo', foreign_keys=[equipo1_id])
+    equipo2 = db.relationship('Equipo', foreign_keys=[equipo2_id])
+
+    def __repr__(self):
+        return f'<Resultado {self.deporte}: {self.equipo1.nombre} vs {self.equipo2.nombre}>'
+
 
 # Crea todas las tablas
 with app.app_context():
@@ -41,12 +66,12 @@ def sign_in():
             flash('Se necesitan nombre y contraseña')
             return redirect(url_for('sign_in'))
 
-        # Verifica si el usuario ya existe en la base de datos
+        # Verifica si existe en la base de datos
         if User.query.filter_by(username=nombre).first():
             flash('El usuario ya existe. Por favor, elija otro nombre de usuario.')
             return redirect(url_for('sign_in'))
 
-        # Crea un nuevo usuario y lo agrega a la base de datos
+        # Crea un nuevo usuario y lo agrega a la base 
         new_user = User(username=nombre, password=contraseña)
         db.session.add(new_user)
         db.session.commit()
@@ -82,7 +107,9 @@ def logout():
 
 @app.route("/resultados")
 def resultados():
-    return render_template("resultados.html")
+    resultados = Resultado.query.all() 
+    return render_template("resultados.html", resultados=resultados)
+
 
 @app.route("/contacto")
 def contacto():
@@ -101,6 +128,46 @@ def perfil():
     else:
         flash('Inicie sesión primero.')
         return redirect(url_for('login'))
+
+@app.route('/agregar', methods=['GET', 'POST'])
+def agregar():
+    if request.method == 'POST':
+        deporte = request.form['deporte']
+        equipo1_nombre = request.form['equipo1']
+        puntuacion1 = int(request.form['puntuacion1'])
+        equipo2_nombre = request.form['equipo2']
+        puntuacion2 = int(request.form['puntuacion2'])
+
+        # Verifica si los equipos existen en la base y los crea si no hay
+        equipo1 = Equipo.query.filter_by(nombre=equipo1_nombre).first()
+        if not equipo1:
+            equipo1 = Equipo(nombre=equipo1_nombre)
+            db.session.add(equipo1)
+
+        equipo2 = Equipo.query.filter_by(nombre=equipo2_nombre).first()
+        if not equipo2:
+            equipo2 = Equipo(nombre=equipo2_nombre)
+            db.session.add(equipo2)
+
+        db.session.commit()
+
+        
+        if puntuacion1 > puntuacion2:
+            ganador = equipo1.nombre
+        elif puntuacion2 > puntuacion1:
+            ganador = equipo2.nombre
+        else:
+            ganador = 'Empate'
+
+        # Crea un nuevo resultado
+        resultado = Resultado(deporte=deporte, equipo1_id=equipo1.id, equipo2_id=equipo2.id, puntuacion1=puntuacion1, puntuacion2=puntuacion2, ganador=ganador)
+        db.session.add(resultado)
+        db.session.commit()
+
+        flash('Resultado agregado correctamente.')
+        return redirect(url_for('resultados'))
+
+    return render_template('agregar.html')
 
 if __name__ == '__main__':
     app.run(debug=True, port=3500)
